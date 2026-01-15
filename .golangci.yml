@@ -1,0 +1,60 @@
+version: "2"
+linters:
+  default: all
+  disable:
+    - depguard
+    - exhaustruct
+    - gochecknoglobals
+    - gosec
+    - mnd
+    - musttag
+    - nlreturn
+    - noctx
+    - noinlineerr
+    - paralleltest
+    - testpackage
+    - wrapcheck
+    - wsl
+    - wsl_v5
+  settings:
+    errcheck:
+      exclude-functions:
+        - crypto/rand.Read
+        - io.WriteString
+    ireturn:
+      allow:
+        - error
+        - stdlib
+        - generic
+    varnamelen:
+      max-distance: 15
+      ignore-decls:
+        - c Cookie
+        - r *http.Request
+        - w http.ResponseWriter
+  exclusions:
+    warn-unused: true
+    generated: lax
+    presets:
+      #- comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - path: _test\.go
+        linters:
+          - funlen
+          - revive
+formatters:
+  enable:
+    - gofumpt
+    - golines
+  settings: 
+    gofumpt:
+      extra-rules: true
+    #golines:
+     #max-len: 120
+  exclusions:
+    warn-unused: true
+    #paths: _test\.go
+    generated: lax
