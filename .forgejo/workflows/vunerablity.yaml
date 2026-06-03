@@ -1,0 +1,19 @@
+name: vulnerabiltiy check
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  govulncheck:
+    runs-on: codeberg-tiny-lazy
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - run: |
+          go run golang.org/x/vuln/cmd/govulncheck@latest ./...
