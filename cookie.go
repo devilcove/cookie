@@ -26,7 +26,6 @@
 package cookie
 
 import (
-	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -34,7 +33,6 @@ import (
 	"encoding/binary"
 	"errors"
 	"net/http"
-	"slices"
 	"time"
 )
 
@@ -127,26 +125,25 @@ func Clear(w http.ResponseWriter, name string, remove bool) error {
 // Returns ErrNotInitialized if the cookie hasn't been created with New,
 // ErrCookieExpired if the cookie has expired, or other errors for decryption failures.
 func Get(r *http.Request, name string) ([]byte, error) {
-	var cookieData []byte
 	c, ok := cookies[name]
 	if !ok {
-		return cookieData, ErrNotInitialized
+		return nil, ErrNotInitialized
 	}
 	cookie, err := r.Cookie(c.Name)
 	if err != nil {
-		return cookieData, err
+		return nil, err
 	}
 	encrypted, err := base64.StdEncoding.DecodeString(cookie.Value)
 	if err != nil {
-		return cookieData, err
+		return nil, err
 	}
 
 	plain, err := c.Mode.Open(nil, c.Nonce, encrypted, nil)
 	if err != nil {
-		return cookieData, err
+		return nil, err
 	}
 	if expired(plain, c.MaxAge) {
-		return cookieData, ErrCookieExpired
+		return nil, ErrCookieExpired
 	}
 	return plain[8:], nil
 }
@@ -171,6 +168,5 @@ func expired(in []byte, age int64) bool {
 func addTimestamp(in []byte) []byte {
 	ts := make([]byte, 8)
 	binary.BigEndian.PutUint64(ts, uint64(time.Now().Unix()))
-	updated := slices.Insert([][]byte{in}, 0, ts)
-	return bytes.Join(updated, []byte(""))
+	return append(ts, in...)
 }
