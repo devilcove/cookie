@@ -166,7 +166,7 @@ func expired(in []byte, age int64) bool {
 }
 
 func addTimestamp(in []byte) []byte {
-	ts := make([]byte, 8)
+	ts := make([]byte, 8, 8+len(in))
 	binary.BigEndian.PutUint64(ts, uint64(time.Now().Unix()))
 	return append(ts, in...)
 }
