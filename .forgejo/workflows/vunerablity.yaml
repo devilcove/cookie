@@ -16,5 +16,4 @@ jobs:
         with:
           go-version-file: go.mod
       - run: |
-          GOTOOLCHAIN=auto go install golang.org/x/vuln/cmd/govulncheck@latest
-          ~/go/bin/govulncheck -show version,color ./...
+          GOTOOLCHAIN=auto go run golang.org/x/vuln/cmd/govulncheck@latest -show version,color ./...
